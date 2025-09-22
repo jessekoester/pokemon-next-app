@@ -1,7 +1,10 @@
 {
   "name": "pokemon-next-app",
+  "author": {
+    "name": "Jesse Koester"
+  },
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
