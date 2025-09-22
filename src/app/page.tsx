@@ -51,7 +51,6 @@ interface PokemonDetails {
 }
 
 export default function Home() {
-  // Question 1: Tell me what the useEffect hook is used for in React. Can you give a simple example of how you’ve used it in your projects ?
   /*
   The react useEffect hook is utlized to manage side effects within the Javascript / React lifecycle. 
   Often times this is used in conjunction with useState hook in order to update date or listen to events.
