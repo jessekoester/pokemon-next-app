@@ -52,20 +52,20 @@ interface PokemonDetails {
 
 export default function Home() {
   /*
-  The react useEffect hook is utlized to manage side effects within the Javascript / React lifecycle. 
+  The react useEffect hook is utilized to manage side effects within the Javascript / React lifecycle. 
   Often times this is used in conjunction with useState hook in order to update date or listen to events.
-  It is also used to fetch data from internal or external API endpoints, publish and listen to subsctiptions, 
+  It is also used to fetch data from internal or external API endpoints, publish and listen to subscriptions, 
   or making changes to the DOM. 
   useEffect renders based on on changes, the one main pitfall that can happen is when the dependency array always sees 
-  changes and infitinitely rerenders.
-  I setup a small Next.js project to show a few example of this useing the Pokemon API. 
+  changes and infinitely rerenders.
+  I setup a small Next.js project to show a few example of this using the Pokemon API. 
   Few examples is to search for pokemon and update the selected Pokemon. This could be extended to take an input from a for,
   but for the sake of this example I will just be giving it a list of data to search on. 
-  useEffect takes two paramenters the method or function and the dependency array.
+  useEffect takes two parameters the method or function and the dependency array.
   At its root in this example it watches the nameToSearch dependency
     -> if the dependency shape/value changes the useEffect runs and the component is rerendered.
     Note: In this case we have a fixed value on the dependency so this pattern is fairly safe, but if the side effect is more complex
-    Often times this needs to be a useCallback or a useMemo which prevents the infinite loop issue with complex dependenies based on 
+    Often times this needs to be a useCallback or a useMemo which prevents the infinite loop issue with complex dependencies based on 
     how React responds to side effects.
     
   This example fetches the Pokemon data from an external API from the Pokemon graphQL endpoint and then updates the state.
