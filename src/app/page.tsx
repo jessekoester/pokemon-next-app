@@ -1,54 +1,10 @@
 'use client'
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import { pokemonDetailsQuery } from "./shared/gql/pokemon-details";
+import { PokemonDetails, PokemonSearchParameter } from "./shared/types/pokemon-details-types";
+import { fetchPokemonFromGraphQL } from "./shared/utils/details-utils";
 
-type PokemonSearchParameter= Record<string, string>
-interface PokemonDetails {
-  species: {
-    name: string;
-    base_happiness: number | null;
-    is_legendary: boolean;
-    is_mythical: boolean;
-    generation: { name: string } | null;
-    habitat: { name: string } | null;
-    pokemon: {
-      nodes: {
-        height: number | null;
-        name: string;
-        id: number;
-        weight: number | null;
-        abilities: {
-          nodes: { ability: { name: string } } [];
-        };
-        stats: {
-          base_stat: number;
-          stat: { name: string };
-        } [];
-        types: {
-          slot: number;
-          type: { name: string };
-        } [];
-        levelUpMoves: {
-          nodes: {
-            move: { name: string };
-            level: number | null;
-          } [];
-        };
-        foundInAsManyPlaces: {
-          aggregate: { count: number } | null;
-        };
-        fireRedItems: {
-          item: { name: string; cost: number | null };
-          rarity: number | null;
-        } [];
-        
-    } [];
-      
-    };flavorText: {
-        flavor_text: string;
-      }[];
-  } [];
-}
 
 export default function Home() {
   /*
@@ -71,109 +27,16 @@ export default function Home() {
   This example fetches the Pokemon data from an external API from the Pokemon graphQL endpoint and then updates the state.
   */
   const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetails | null>()
-
-  const nameToSearch = {
+  const [nameToSearch,] = useState<PokemonSearchParameter>({
     "name": "charizard"
-  }
+  })
 
-  const query = `query pokemon_details($name: String) {
-        species: pokemonspecies(where: {name: {_eq: $name}}) {
-          name
-          base_happiness
-          is_legendary
-          is_mythical
-          generation: generation {
-            name
-          }
-          habitat: pokemonhabitat {
-            name
-          }
-          pokemon: pokemons_aggregate(limit: 1) {
-            nodes {
-              height
-              name
-              id
-              weight
-              abilities: pokemonabilities_aggregate {
-                nodes {
-                  ability: ability {
-                    name
-                  }
-                }
-              }
-              stats: pokemonstats {
-                base_stat
-                stat: stat {
-                  name
-                }
-              }
-              types: pokemontypes {
-                slot
-                type: type {
-                  name
-                }
-              }
-              levelUpMoves: pokemonmoves_aggregate(where: {movelearnmethod: {name: {_eq: "level-up"}}}, distinct_on: move_id) {
-                nodes {
-                  move: move {
-                    name
-                  }
-                  level
-                }
-              }
-              foundInAsManyPlaces: encounters_aggregate {
-                aggregate {
-                  count
-                }
-              }
-              fireRedItems: pokemonitems(where: {version: {name: {_eq: "firered"}}}) {
-                item {
-                  name
-                  cost
-                }
-                rarity
-              }
-            }
-          }
-          flavorText: pokemonspeciesflavortexts(where: {language: {name: {_eq: "en"}}, version: {name: {_eq: "firered"}}}) {
-            flavor_text
-          }
-        }
-      }`
-
-  async function fetchPokemonFromGraphQL(query: string, variables: PokemonSearchParameter) {
-    const response = await fetch(
-      "https://graphql.pokeapi.co/v1beta2",
-      {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables: variables,
-          operationName: "pokemon_details"
-        })
-      }
-    )
-    // Handle request error (the request itself failed, 400, 403 the response status)
-    if(!response.ok) {
-      throw new Error(`GraphQL Fetch Failed: ${response.status}`)
-    }
-
-    // Wait for the promise to resolve then set the response data to result object
-    const results = await response.json();
-    if(results.errors) {
-      throw new Error(`GraphQL errors: ${JSON.stringify(results.errors)}`);
-    }
-
-    return results.data as PokemonDetails
-  }
+  const query = pokemonDetailsQuery;
 
   useEffect(() => {
       (async () => {
         try {
-          // Await the reults and set them to state or throw an error
+          // Await the results and set them to state or throw an error
           const pokemonResults = await fetchPokemonFromGraphQL(query, nameToSearch);
           if (pokemonResults) {
             setSelectedPokemon(pokemonResults)
@@ -189,7 +52,7 @@ export default function Home() {
       })()
       // Define the dependency(s) that should be watched to trigger the userEffect in this case if the query or the variables changes
       // The userEffect will run and re-render
-    }, [query])
+    }, [query, nameToSearch])
 
   return (
     <div className={styles.page}>
